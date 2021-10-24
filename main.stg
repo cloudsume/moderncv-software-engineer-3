@@ -1,0 +1,64 @@
+resume(data) ::= <<
+<preamble()>
+<name(data.name)>
+<title(data.headline)>
+<address(data.address)>
+<mobile(data.mobile)>
+<email(data.email)>
+<linkedin(data.linkedin)>
+<github(data.github)>
+<quote(data.summary)>
+
+\begin{document}
+
+\makecvtitle
+
+<if(data.experience)>\section{Experience}<endif>
+<data.experience:experience()>
+
+<if(data.education)>\section{Education}<endif>
+<data.education:education()>
+
+<if(data.skill)>\section{Skills}<endif>
+<skill(data.skill)>
+
+<if(data.language)>\section{Languages}<endif>
+<data.language:language()>
+
+\end{document}
+>>
+
+preamble() ::= <<
+\documentclass[11pt,letterpaper,sans]{moderncv}
+
+\moderncvstyle{casual}
+\moderncvcolor{purple}
+
+\usepackage[scale=0.75]{geometry}
+\usepackage{enumitem}
+>>
+
+name(v) ::= "<if(v && v.firstName && v.lastName)>\name{<firstName(v)>}{<v.lastName>}<else>\name{Jane Emily}{Doe}<endif>"
+firstName(v) ::= "<if(v.middleName)><v.firstName> <v.middleName><else><v.firstName><endif>"
+title(v) ::= "<if(v)>\title{<v>}<endif>"
+address(v) ::= "<if(v)>\address{<v.street>}{<v.region>}{<v.country>}<endif>"
+mobile(v) ::= "<if(v)>\phone[mobile]{<v>}<endif>"
+email(v) ::= "<if(v)>\email{<v>}<endif>"
+linkedin(v) ::= "<if(v)>\social[linkedin]{<v>}<endif>"
+github(v) ::= "<if(v)>\social[github]{<v>}<endif>"
+quote(v) ::= "<if(v)>\quote{<v>}<endif>"
+experience(v) ::= "\cventry{<experienceStart(v.start)> -- <experienceEnd(v.end)>}{<v.title>}{<v.company>}{<experienceAddress(v)>}{<experienceCountry(v)>}{<v.description>}"
+experienceStart(v) ::= "<if(v)><v.year><endif>"
+experienceEnd(v) ::= "<if(v)><v.year><else>present<endif>"
+experienceAddress(v) ::= "<if(v.country)><v.region><else><v.street><endif>"
+experienceCountry(v) ::= "<if(v.country)><v.country><else><v.region><endif>"
+education(v) ::= "\cventry{<v.start.year> -- <educationEnd(v.end)>}{<v.degree>}{<v.institute>}{<addr(v)>}{<grade(v.grade)>}{<v.description>}"
+educationEnd(v) ::= "<if(v)><v.year><else>present<endif>"
+skill(v) ::= <<
+<if(v.expert)>\cvitem{Expert}{<v.expert;separator=", ">}<endif>
+<if(v.novice)>\cvitem{Basic}{<v.novice;separator=", ">}<endif>
+>>
+language(v) ::= "\cvitemwithcomment{<v.name>}{<v.proficiency>}{<v.comment>}"
+
+addr(v) ::= "<if(v.country)><v.country><else><v.region><endif>"
+grade(v) ::= "<if(v)>\textit{<v>}<endif>"
